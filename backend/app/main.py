@@ -1,17 +1,14 @@
 from fastapi import FastAPI
-from motor.motor_asyncio import AsyncIOMotorClient
-import os
+from app.database import db
+from app.routes import users
 
 app = FastAPI()
 
-mongodb_url = os.getenv("MONGODB_URL", "mongodb://localhost:27017")
-client = AsyncIOMotorClient(mongodb_url)
-db = client.fitnessdb
+app.include_router(users.router)
 
 @app.get("/")
 async def root():
     try:
-        # Тестове підключення
         await db.command("ping")
         db_status = "MongoDB connected ✅"
     except Exception as e:
@@ -21,3 +18,4 @@ async def root():
         "message": "Фітнес-додаток працює!",
         "database_status": db_status
     }
+
